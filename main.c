@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "prompt.c"
 
 int main(int argc, char** argv){
     char *cmd;
@@ -38,8 +39,39 @@ char *read_cmd(void){
     while(fgets(buf,1024,stdin))
     {   
         int buflen = strlen(buf);
-        
 
-    }
+        if(!ptr)
+        {
+            ptr = malloc(buflen+1);
+        }
+        else
+        {   
+            char *ptr2 = realloc(ptr,ptrlen+buflen+1);
 
+            if (ptr2)
+            {
+                ptr = ptr2;
+            }
+            else
+            {
+                free(ptr);
+                ptr = NULL;
+            }
+
+        }
+        strcpy(ptr+ptrlen, buf);
+
+        if(buf[buflen-1] == '\n') // When enter is pressed
+        {
+            if(buflen ==1 || buf[buflen-2] != '\\') // check if enter is pressed after backslash
+            {
+                return ptr;
+            }
+
+            ptr[ptrlen + buflen-2] = '\0';
+            buflen -= 2; // removing the backslash and newline character
+            print_prompt2();
+        }
+
+    return ptr;
 }
